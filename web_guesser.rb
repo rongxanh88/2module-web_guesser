@@ -13,5 +13,5 @@ end
 wb = WebGuesser.new
 
 get '/' do
-  "The secret number is X, where the secret number is #{wb.hidden_number}."
+  erb :index, :locals => {:hidden_number => wb.hidden_number}
 end
