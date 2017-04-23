@@ -3,35 +3,64 @@ require 'sinatra/reloader'
 
 class WebGuesser
   attr_reader :hidden_number
-  attr_accessor :number_x, :background
+  attr_accessor :number_x, :background, :guesses_remaining
 
   def initialize
     @hidden_number = rand(100)
     @number_x = "X"
     @background = "#F0F8FF"
+    @guesses_remaining = 6
   end
 
   def check_guess(number)
     if number == 0
       message = ""
     elsif number == hidden_number
-      message = "You got it right!"
+      message = "You got it right! Game reset, a new number has been generated."
       number_x = hidden_number
-      @background = "#008000"
+      set_background("green")
+      reset_game
     elsif number <= (hidden_number - 5)
       message = "Way too low!"
-      @background = "#FF0000"
+      set_background("red")
     elsif number >= (hidden_number + 5)
       message = "Way too high!"
-      @background = "#FF0000"
+      set_background("red")
     elsif number < hidden_number
       message = "Too low!"
-      @background = "#FF6347"
+      set_background("light red")
     elsif number > hidden_number
       message = "Too high!"
-      @background = "#FF6347"
+      set_background("light red")
     end
-    message
+
+    deduct_guesses_remaining
+    guesses_remaining == 0 ? reset_game : message
+  end
+
+  def set_background(color)
+    case color
+    when "red"
+      @background = "#FF0000"
+    when "light red"
+      @background = "#FF6347"
+    when "green"
+      @background = "#008000"
+    end
+  end
+
+  def reset_guesses
+    @guesses_remaining = 6
+  end
+
+  def deduct_guesses_remaining
+    @guesses_remaining -= 1
+  end
+
+  def reset_game
+    reset_guesses
+    @hidden_number = rand(100)
+    "Game has reset"
   end
 
 end
