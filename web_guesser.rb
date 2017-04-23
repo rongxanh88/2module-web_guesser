@@ -2,8 +2,8 @@ require 'sinatra'
 require 'sinatra/reloader'
 
 class WebGuesser
-  attr_reader :hidden_number, :cheat
-  attr_accessor :number_x, :background, :guesses_remaining
+  attr_reader :hidden_number
+  attr_accessor :number_x, :background, :guesses_remaining, :cheat
 
   def initialize
     @hidden_number = rand(100)
@@ -66,7 +66,7 @@ class WebGuesser
   end
 
   def cheating?
-    number_x = hidden_number if cheat == true
+    @number_x = hidden_number if cheat == true.to_s
   end
 
 end
@@ -76,10 +76,10 @@ wb = WebGuesser.new
 get '/' do
   guessed_number = params["guess"]
   message = wb.check_guess(guessed_number.to_i)
-  # wb.cheat = :locals[:cheat]
-  
+  wb.cheat = params["cheat"]
+
   erb :index, :locals => {
     :hidden_number => wb.number_x, :message => message,
-    :background_color => wb.background, :cheat => wb.cheat
+    :background_color => wb.background
   }
 end
